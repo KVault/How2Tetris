@@ -1,19 +1,19 @@
 import ctypes
 import win32gui
 import win32ui
+
 import cv2
 import numpy as np
 from PIL import Image
 
-"""Holds the screen capture method and a function to return a Bitmap with the
-latest screen information. Bear in mind the returned image might not be OpenCV compatible"""
-
 
 class ScreenCapture:
-    """Initializes the Screen capture object. This needs the exact window title
-    that the program is going to use (i.e. 'Mesen - Tetris')"""
+    """Holds the screen capture method and a function to return a Bitmap with the
+    latest screen information. Bear in mind the returned image might not be OpenCV compatible"""
 
     def __init__(self, window_name="Mesen - Tetris"):
+        """Initializes the Screen capture object. This needs the exact window title
+            that the program is going to use (i.e. 'Mesen - Tetris')"""
         self.window_name = window_name
         self.window_handle = win32gui.FindWindow(None, self.window_name)
         hwnd_dc = win32gui.GetWindowDC(self.window_handle)
@@ -37,19 +37,20 @@ class ScreenCapture:
         bmpinfo = save_bit_map.GetInfo()
         bmpstr = save_bit_map.GetBitmapBits(True)
 
+        win32gui.DeleteObject(save_bit_map.GetHandle())
         return Image.frombuffer(
             'RGB',
             (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
             bmpstr, 'raw', 'BGRX', 0, 1)
 
-    """Returns the current frame in OpenCV RGB mode"""
     def frame_rgb(self):
+        """Returns the current frame in OpenCV RGB mode"""
         bitmap = self.frame()
         rgb = cv2.cvtColor(np.array(bitmap), cv2.COLOR_RGB2BGR)
         return rgb
 
-    """Returns the current frame in OpenCV Gray mode"""
     def frame_gray(self):
+        """Returns the current frame in OpenCV Gray mode"""
         bitmap = self.frame()
         gray = cv2.cvtColor(np.array(bitmap), cv2.COLOR_RGB2GRAY)
         return gray

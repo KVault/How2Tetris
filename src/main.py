@@ -8,7 +8,7 @@ def main():
     while True:
         frame = screen_capture.frame_gray()
         cv2.imshow("Frame", frame)
-        cv2.waitKey(15)
+        cv2.waitKey(1)
 
 
 # Fuck you Python
