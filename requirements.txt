@@ -1,4 +1,6 @@
+win32gui
 opencv-python
 numpy
 mss
 pywin32
+Pillow
