@@ -1,14 +1,17 @@
 import cv2
 
-from src.ScreenCapture import ScreenCapture
+from src.generator import Generator
+from src.screencapture import ScreenCapture
 
 
 def main():
     screen_capture = ScreenCapture()
+    generator = Generator()
     while True:
-        frame = screen_capture.frame_gray()
+        frame_rgb = screen_capture.frame_rgb()
+        model, frame = generator.refresh(frame_rgb)
         cv2.imshow("Frame", frame)
-        cv2.waitKey(1)
+        cv2.waitKey(15)
 
 
 # Fuck you Python
