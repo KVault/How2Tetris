@@ -1,4 +1,5 @@
 from typing import NamedTuple
+
 import cv2
 import numpy as np
 
@@ -12,6 +13,9 @@ class ModelGenerator:
         for things and the model status for that frame"""
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         frame = self.crop_window_border(frame)
+        frame = self.crop_black_border(frame)
+        frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
+        self.get_score(frame)
         return None, frame
 
     @staticmethod
@@ -38,14 +42,38 @@ class ModelGenerator:
         return frame
 
     @staticmethod
-    def crop_black_border(self, ar_horiz: int, ar_vert: int):
+    def crop_black_border(frame, ar_horiz=16, ar_vert=15):
         """Using the Aspect Ratio passed as a parameter this method will process the image and
         crop any black border either top-down or on the sides of the image. We need this since
         the actual game aspect ratio won't change but the window in which it's contained can.
 
         In order to do this we will find the largest image (with that aspect ratio)
         that can fit in the current frame and crop the current frame to the found image"""
-        pass
+
+        aspect_ratio = float(ar_horiz) / float(ar_vert)
+        h_origin, w_origin = frame.shape
+        calculated_width = int(h_origin * aspect_ratio)
+        calculated_hight = int(w_origin / aspect_ratio)
+        if w_origin > calculated_width:
+            to_crop = w_origin - calculated_width
+            frame = frame[0:h_origin, int(to_crop / 2):w_origin - int(to_crop / 2)]
+        else:
+            to_crop = h_origin - calculated_hight
+            frame = frame[int(to_crop / 2):h_origin - int(to_crop / 2), 0:h_origin]
+        return frame
+
+    @staticmethod
+    def get_rect_percentage(frame, x_percent, y_percent, w_percent, h_percent):
+        h_origin, w_origin, _ = frame.shape
+        x_offset = int(w_origin * (x_percent / 100))
+        y_offset = int(h_origin * (y_percent / 100))
+        w_rect = int(w_origin * (w_percent / 100)) + x_offset
+        h_rect = int(h_origin * (h_percent / 100)) + y_offset
+        return (x_offset, y_offset), (w_rect, h_rect)
+
+    def get_score(self, frame):
+        rect = self.get_rect_percentage(frame, x_percent=75, y_percent=6, w_percent=23, h_percent=28)
+        cv2.rectangle(frame, rect[0], rect[1], (0, 255, 0), 3)
 
 
 class Contour(NamedTuple):

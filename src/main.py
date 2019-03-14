@@ -5,7 +5,7 @@ from src.screencapture import ScreenCapture
 
 
 def main():
-    screen_capture = ScreenCapture()
+    screen_capture = ScreenCapture(window_name="FCEUX 2.2.3: Tetris")
     generator = ModelGenerator()
     while True:
         frame_rgb = screen_capture.frame_rgb()
