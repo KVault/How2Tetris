@@ -28,7 +28,7 @@ class ScreenCapture:
 
         # Now create the bitmap to hold the image
         save_bit_map = win32ui.CreateBitmap()
-        save_bit_map.CreateCompatibleBitmap(self.mfcdc, width, height)
+        save_bit_map.CreateCompatibleBitmap(self.mfcdc, width*3, height*3)
 
         # Print the window
         self.dc.SelectObject(save_bit_map)
