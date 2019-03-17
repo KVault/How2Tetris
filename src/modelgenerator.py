@@ -1,7 +1,8 @@
-from typing import NamedTuple
-
 import cv2
 import numpy as np
+
+from src.contour import Contour
+from src.rect import Rect
 
 
 class ModelGenerator:
@@ -42,7 +43,7 @@ class ModelGenerator:
         return frame
 
     @staticmethod
-    def crop_black_border(frame, ar_horiz=16, ar_vert=15):
+    def crop_black_border(frame, ar_horiz=4, ar_vert=3):
         """Using the Aspect Ratio passed as a parameter this method will process the image and
         crop any black border either top-down or on the sides of the image. We need this since
         the actual game aspect ratio won't change but the window in which it's contained can.
@@ -59,7 +60,7 @@ class ModelGenerator:
             frame = frame[0:h_origin, int(to_crop / 2):w_origin - int(to_crop / 2)]
         else:
             to_crop = h_origin - calculated_hight
-            frame = frame[int(to_crop / 2):h_origin - int(to_crop / 2), 0:h_origin]
+            frame = frame[int(to_crop / 2):h_origin - int(to_crop / 2), 0:w_origin]
         return frame
 
     @staticmethod
@@ -69,13 +70,22 @@ class ModelGenerator:
         y_offset = int(h_origin * (y_percent / 100))
         w_rect = int(w_origin * (w_percent / 100)) + x_offset
         h_rect = int(h_origin * (h_percent / 100)) + y_offset
-        return (x_offset, y_offset), (w_rect, h_rect)
+        rect = Rect(x=x_offset, y=y_offset, w=w_rect, h=h_rect)
+        return rect
 
     def get_score(self, frame):
-        rect = self.get_rect_percentage(frame, x_percent=75, y_percent=6, w_percent=23, h_percent=28)
-        cv2.rectangle(frame, rect[0], rect[1], (0, 255, 0), 3)
+        rect = self.get_rect_percentage(frame, x_percent=73, y_percent=25, w_percent=22, h_percent=4)
+        cv2.rectangle(frame, (rect.x, rect.y), (rect.w, rect.h), (0, 255, 0), 3)
+        score_frame = self._crop_by_rect(frame, rect)
+        score_frame = cv2.cvtColor(score_frame, cv2.COLOR_RGB2GRAY)
 
+        template = cv2.imread('../data/text_template.bmp')
+        template = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
+        #template = cv2.Canny(template, 50, 200)
+        #cv2.imshow('template', template)
+        taca = cv2.matchTemplate(score_frame, template, cv2.TM_CCOEFF_NORMED)
+        print(taca)
 
-class Contour(NamedTuple):
-    area: int
-    value: tuple
+    @staticmethod
+    def _crop_by_rect(frame, rect: Rect):
+        return frame[rect.y:rect.y + rect.h, rect.x:rect.x + rect.w]
