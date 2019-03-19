@@ -1,5 +1,5 @@
 import cv2
-
+from src.parser import Parser
 from src.modelgenerator import ModelGenerator
 from src.screencapture import ScreenCapture
 

@@ -81,21 +81,22 @@ class ModelGenerator:
         cv2.rectangle(frame, (rect.x, rect.y), (rect.w, rect.h), (0, 255, 0), 1)
         score_frame = cv2.cvtColor(score_frame, cv2.COLOR_RGB2GRAY)
 
-        template = cv2.imread('../data/template_zero.bmp')
-        template = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
-        #parser = Parser()
-        #score = parser.get_text(score_frame)
+        # template = cv2.imread('../data/template_zero.bmp')
+        # template = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
+        parser = Parser()
+        score = parser.get_text(score_frame)
+        print(score)
 
-        h_score, w_score = score_frame.shape
-        template = cv2.resize(template, (int(w_score / 6), h_score), interpolation=cv2.INTER_NEAREST)
-        w, h = template.shape[::-1]
-        res = cv2.matchTemplate(score_frame, template, cv2.TM_CCOEFF_NORMED)
-        threshold = 0.4
-        loc = np.where(res >= threshold)
-        score_frame = cv2.cvtColor(score_frame, cv2.COLOR_GRAY2RGB)
-        for pt in zip(*loc[::-1]):
-            cv2.rectangle(score_frame, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
-        cv2.imshow('template', template)
+        # h_score, w_score = score_frame.shape
+        # template = cv2.resize(template, (int(w_score / 6), h_score), interpolation=cv2.INTER_NEAREST)
+        # w, h = template.shape[::-1]
+        # res = cv2.matchTemplate(score_frame, template, cv2.TM_CCOEFF_NORMED)
+        # threshold = 0.4
+        # loc = np.where(res >= threshold)
+        # score_frame = cv2.cvtColor(score_frame, cv2.COLOR_GRAY2RGB)
+        # for pt in zip(*loc[::-1]):
+        #     cv2.rectangle(score_frame, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+        # cv2.imshow('template', template)
         cv2.imshow('score_frame', score_frame)
 
     @staticmethod
