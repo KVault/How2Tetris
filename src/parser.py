@@ -21,14 +21,20 @@ class Parser:
 
     def get_text(self, frame, numbers_only=False):
         """return the text found in the frame"""
-        result = np.zeros(1)
+        result = np.empty((0, 2))
 
         for key in self._templates.keys():
             template = self._templates.get(key)
+            h_frame, w_frame, _ = frame.shape
+            template = cv2.resize(template, (w_frame // 6, h_frame - 1), interpolation=cv2.INTER_NEAREST)
             h, w, _ = template.shape
             res = cv2.matchTemplate(frame, template, cv2.TM_CCOEFF_NORMED)
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
             loc = np.where(res >= self._threshold)
-            result = np.append(result, zip(*loc[::-1]))
+            for pt in zip(*loc[::-1]):
+                result = np.append(result, [(key, pt[0])], axis=0)
+                cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+        print(sorted(result, key=lambda x: x[1]))
         return ""
 
     def get_tetromino(self, frame):

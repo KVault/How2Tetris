@@ -79,7 +79,7 @@ class ModelGenerator:
 
         score_frame = self._crop_by_rect(frame, rect)
         cv2.rectangle(frame, (rect.x, rect.y), (rect.w, rect.h), (0, 255, 0), 1)
-        score_frame = cv2.cvtColor(score_frame, cv2.COLOR_RGB2GRAY)
+        #score_frame = cv2.cvtColor(score_frame, cv2.COLOR_RGB2GRAY)
 
         # template = cv2.imread('../data/template_zero.bmp')
         # template = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
